@@ -1,5 +1,8 @@
 
+//const ITEMS_PER_PAGE = 10; feature pagination
 const usersList = [];
+let usersListTemp = usersList;
+
 const callAPI = async () => {
     const data = await fetch('https://randomuser.me/api/?results=10&nat=ua');
     handleErrors(data);
@@ -26,20 +29,17 @@ async function getUsers() {
     }
 }
 
-const mainContainer = document.querySelectorAll('.main__content')[0];
+const mainContainer = document.getElementById('main__content');
+let usersListContainer = document.createElement('div');
+usersListContainer.classList.add('users');
 
 const renderUsers = (usersList) => {
-    let usersListContainer = document.createElement('div');
-    usersListContainer.classList.add('users');
-
     let users = usersList.map((user) => createUser(user)).join("");
     usersListContainer.innerHTML = users;
     mainContainer.appendChild(usersListContainer);
 }
 
 const createUser = (user) => {
-    // let user = 
-    console.log(user)
     return `
         <div class="users__item">
             <div class="user">
@@ -49,8 +49,8 @@ const createUser = (user) => {
                     </div>
 
                     <div class="user-headings">
-                        <h5>Hey, my name is <strong>${user.name.first + ' ' + user.name.last}</strong></h5>
-                        <h6>I am ${user.dob.age} years old</h6>
+                        <h5><strong>${user.name.first + ' ' + user.name.last}</strong></h5>
+                        <h6>${user.dob.age} years old</h6>
                     </div>
 
                     <div class="user-description">
@@ -61,10 +61,11 @@ const createUser = (user) => {
                         <p>
                             <a href="tel:${user.phone}">${user.phone}</a>
                         </p>
+                        <p class="uppercase">${user.gender}</p>
                     </div>
 
-                    <div class="user-button">
-                        <a href="more">Read More</a>
+                    <div class="user-button" data-id="${user.name.last.toLowerCase()}">
+                        View Profile
                     </div>
                 </div>
             </div>
@@ -72,6 +73,175 @@ const createUser = (user) => {
     `;
 }
 
+const renderUser = (user) => {
+    let singleUser = `
+        <div class="user user--single">
+            <div class="user-block">
+                <div class="user-poster">
+                    <img src="${user.picture.medium}" alt="${user.name.first + ' ' + user.name.last}">
+                </div>
 
-// //init
+                <div class="user-headings">
+                    <h5><strong>${user.name.first + ' ' + user.name.last}</strong></h5>
+                    <h6>${user.dob.age} years old</h6>
+                </div>
+
+                <div class="user-description">
+                    <p><strong>User Location:</strong></p>
+                    <p>${new Date(user.dob.date).toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"}) }</p>
+                    <p>&nbsp;</p>
+                    <p><strong>User Location:</strong></p>
+                    <p>${user.location.country}</p>
+                    <p>${user.location.state}</p>
+                    <p>${user.location.city}</p>
+                    <p>&nbsp;</p>
+                    <p><strong>User Contacts:</strong></p>
+                    <p>
+                        <a href="mailto:${user.email}">${user.email}</a>
+                    </p>
+                    <p>
+                        <a href="tel:${user.phone}">${user.phone}</a>
+                    </p>
+                    <p>&nbsp;</p>
+                    <p><strong>User Gender:</strong></p>
+                    <p class="uppercase">${user.gender}</p>
+                </div>
+            </div>
+        </div>
+    `;
+    mainContainer.innerHTML = singleUser;
+}
+
+// filters
+let filter = document.querySelector('.filter__block input');
+
+filter.addEventListener('input', (e) => {
+    const value = e.preventDefault();
+    const searchValue = e.target.value.trim().toLowerCase();
+
+    if (searchValue !== '') {
+        const filteredFriends = usersList.filter((user) => {
+            return user.name.first.toLowerCase().indexOf(searchValue) > -1;
+        });
+        usersListTemp = [...filteredFriends];
+
+    } else {
+        usersListTemp = [...usersList];
+    }
+
+    renderUsers(usersListTemp);
+});
+
+document.querySelectorAll('.filter__block input[type="radio"]').forEach((elem) => {
+    elem.addEventListener("change", function(event) {
+        let checkedValue = event.target.id;
+        let filteredFriends = [];
+        let usersListTempInner = [];
+
+        switch (event.target.name) {
+            case 'alphabet':
+                uncheckRadio('age');
+
+                filteredFriends = usersListTemp.sort((a, b) => {
+                    const nameA = a.name.first.toUpperCase();
+                    const nameB = b.name.first.toUpperCase();
+                    if (nameA < nameB) {
+                        return -1;
+                    }
+                    if (nameA > nameB) {
+                        return 1;
+                    }
+
+                    return 0;
+                });
+
+                if (event.target.id == 'alphabetZA') {
+                    filteredFriends.reverse();
+                }
+
+                break;
+            case 'gender':
+                if (event.target.id == 'genderAll') {
+                    filteredFriends = [...usersList];
+                } else {
+                    filteredFriends = usersListTemp.filter(friend => friend.gender === event.target.id);
+                }
+
+                break;
+            case 'age':
+                uncheckRadio('alphabet');
+
+                filteredFriends = usersListTemp.sort((a, b) => a.dob.age - b.dob.age);
+
+                if (event.target.id == 'ageHighest') {
+                    filteredFriends.reverse();
+                }
+
+                break;
+            default:
+                filteredFriends = [...usersList];
+        }
+
+
+        console.log(filteredFriends)
+        usersListTemp = [...filteredFriends];
+
+        renderUsers(usersListTemp);
+    });
+});
+
+// reset
+let filterReset = document.querySelector('.filter__block button');
+filterReset.addEventListener('click', (e) => {
+    const value = e.preventDefault();
+    let singleUser = document.querySelector('.user--single');
+    
+    if (singleUser) {
+        singleUser.parentNode.removeChild(singleUser);
+    }
+
+    renderUsers(usersList);
+});
+
+//read more
+mainContainer.addEventListener('click', (e) => {
+    const value = e.preventDefault();
+
+    if(e.target.closest('.user-button')) {
+        let id = e.target.closest('.user-button').dataset.id;
+        window.location.hash = id;
+    }
+});
+
+//change hash event
+window.addEventListener('hashchange', () => {
+    if (window.location.hash) {
+        const singleUser = usersList.filter((user) => {
+            return user.name.last.toLowerCase().indexOf(location.hash.split('#')[1]) > -1;
+        });
+        renderUser(singleUser[0]);
+    } else {
+        renderUsers(usersList);
+    }
+}, false);
+
+//helper
+const uncheckRadio = (name) => {
+    let radioList = document.getElementsByName(name);
+
+    radioList.forEach((title) => {
+        title.checked = false;
+    });
+}
+
+// toggle theme
+const theme = document.querySelector('.header__toggle');
+const body = document.querySelector('body');
+
+theme.addEventListener('click', (e) => {
+    const value = e.preventDefault();
+    body.classList.toggle('theme-dark');
+});
+
+//init
 getUsers();
