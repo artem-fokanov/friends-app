@@ -243,6 +243,7 @@ body {
     
     .user--single .user-block {
         padding: 15px;
+        height: auto;
     }
     
     .user--single .user-poster {

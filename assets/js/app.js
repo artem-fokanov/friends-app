@@ -106,6 +106,10 @@ const renderUser = (user) => {
                     <p><strong>User Gender:</strong></p>
                     <p class="uppercase">${user.gender}</p>
                 </div>
+
+                <div class="user-button user-button--close">
+                    Back to Friends
+                </div>
             </div>
         </div>
     `;
@@ -160,8 +164,9 @@ document.querySelectorAll('.filter__block input[type="radio"]').forEach((elem) =
 
                 break;
             case 'gender':
-                if (event.target.id == 'male' || event.target.id == 'female') {
-                    filteredFriends = usersList.filter(friend => friend.gender === event.target.id);
+                if (event.target.id === 'male' || event.target.id === 'female') {
+                    filteredFriends = usersListTemp.filter(friend => friend.gender === event.target.id);
+                    
                 } else {
                     filteredFriends = [...usersListTemp];
                 }
@@ -181,9 +186,7 @@ document.querySelectorAll('.filter__block input[type="radio"]').forEach((elem) =
                 filteredFriends = [...usersList];
         }
 
-        usersListTemp = [...filteredFriends];
-
-        renderUsers(usersListTemp);
+        renderUsers(filteredFriends);
     });
 });
 
@@ -191,22 +194,38 @@ document.querySelectorAll('.filter__block input[type="radio"]').forEach((elem) =
 let filterReset = document.querySelector('.filter__block button');
 filterReset.addEventListener('click', (e) => {
     const value = e.preventDefault();
+    closeUser();
+    uncheckRadio('age');
+    uncheckRadio('alphabet');
+    filter.value = '';
+
+    renderUsers(usersList);
+});
+
+//close user
+const closeUser = () => {
     let singleUser = document.querySelector('.user--single');
     
     if (singleUser) {
         singleUser.parentNode.removeChild(singleUser);
     }
 
-    renderUsers(usersList);
-});
+    window.location.hash = '';
+}
 
 //read more
 mainContainer.addEventListener('click', (e) => {
     const value = e.preventDefault();
 
     if(e.target.closest('.user-button')) {
-        let id = e.target.closest('.user-button').dataset.id;
-        window.location.hash = id;
+        if (!e.target.closest('.user-button').classList.contains('user-button--close')) {
+            let id = e.target.closest('.user-button').dataset.id;
+            window.location.hash = id;
+        } else {
+            closeUser();
+            renderUsers(usersList);
+        }
+        
     }
 });
 
@@ -229,6 +248,13 @@ const uncheckRadio = (name) => {
     radioList.forEach((title) => {
         title.checked = false;
     });
+}
+
+function arrayEquals(a, b) {
+    return Array.isArray(a) &&
+      Array.isArray(b) &&
+      a.length === b.length &&
+      a.every((val, index) => val === b[index]);
 }
 
 // toggle theme
