@@ -4,7 +4,7 @@ const usersList = [];
 let usersListTemp = usersList;
 
 const callAPI = async () => {
-    const data = await fetch('https://randomuser.me/api/?results=10&nat=ua');
+    const data = await fetch('https://randomuser.me/api/?results=30&nat=ua');
     handleErrors(data);
 
     const { results: users } = await data.json();
@@ -136,7 +136,6 @@ document.querySelectorAll('.filter__block input[type="radio"]').forEach((elem) =
     elem.addEventListener("change", function(event) {
         let checkedValue = event.target.id;
         let filteredFriends = [];
-        let usersListTempInner = [];
 
         switch (event.target.name) {
             case 'alphabet':
@@ -161,16 +160,16 @@ document.querySelectorAll('.filter__block input[type="radio"]').forEach((elem) =
 
                 break;
             case 'gender':
-                if (event.target.id == 'genderAll') {
-                    filteredFriends = [...usersList];
+                if (event.target.id == 'male' || event.target.id == 'female') {
+                    filteredFriends = usersList.filter(friend => friend.gender === event.target.id);
                 } else {
-                    filteredFriends = usersListTemp.filter(friend => friend.gender === event.target.id);
+                    filteredFriends = [...usersListTemp];
                 }
 
                 break;
             case 'age':
                 uncheckRadio('alphabet');
-
+ 
                 filteredFriends = usersListTemp.sort((a, b) => a.dob.age - b.dob.age);
 
                 if (event.target.id == 'ageHighest') {
@@ -182,8 +181,6 @@ document.querySelectorAll('.filter__block input[type="radio"]').forEach((elem) =
                 filteredFriends = [...usersList];
         }
 
-
-        console.log(filteredFriends)
         usersListTemp = [...filteredFriends];
 
         renderUsers(usersListTemp);
