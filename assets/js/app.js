@@ -335,5 +335,14 @@ theme.addEventListener('click', (e) => {
     body.classList.toggle('theme-dark');
 });
 
+const menuToggle = document .querySelector('.header__toggle-menu');
+const sidebar = document .querySelector('.main__sidebar');
+
+menuToggle.addEventListener('click', (e) => {
+    const value = e.preventDefault();
+    menuToggle.classList.toggle('header__toggle-menu_open');
+    sidebar.classList.toggle('main__sidebar--open');
+});
+
 //init
 getUsers();
