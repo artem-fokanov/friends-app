@@ -189,7 +189,7 @@ const sortBy = (array) => {
             let isReversed = false;
             let result;
 
-            if (sortValue == 'alphabetZA') {
+            if (sortValue === 'alphabetZA') {
                 isReversed = true;
             }
 
@@ -210,15 +210,13 @@ const sortBy = (array) => {
         });
     } else {
         return array.sort((a, b) => {
-            if (sortValue == 'ageLowest') {
+            if (sortValue === 'ageLowest') {
                 return a.dob.age - b.dob.age;
             } else {
                 return b.dob.age - a.dob.age;
             }
         });
     }
-
-    return array;
 }
 
 //close user
