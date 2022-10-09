@@ -22,7 +22,7 @@ const getUsers = async () => {
     try {
         const users = await callAPI();
         usersList.push(...users);
-        renderUsers(getSidebarOptions(), usersList);
+        renderUsers(usersList);
     } catch (e) {
         console.log(e);
     }
@@ -32,11 +32,10 @@ const mainContainer = document.getElementById('main__content');
 const usersListContainer = document.createElement('div');
 usersListContainer.classList.add('users');
 
-const renderUsers = (filtersObject, usersArray) => {
-    let users = filterUsers(filtersObject, usersArray);
+const renderUsers = (usersArray) => {
+    let users = filterUsers(usersArray);
     users = users.map((user) => createUser(user)).join("");
     usersListContainer.innerHTML = users;
-    mainContainer.innerHTML = '';
     mainContainer.appendChild(usersListContainer);
 }
 
@@ -127,7 +126,7 @@ const renderUser = (user) => {
                     <p class="uppercase">${gender}</p>
                 </div>
 
-                <div class="user-button user-button_close">
+                <div class="user-button user-button--close">
                     Back to Friends
                 </div>
             </div>
@@ -140,11 +139,7 @@ const sidebarFilters = document.querySelector('.main__sidebar');
 sidebarFilters.addEventListener("submit", function(event) {
     event.preventDefault();
 
-    renderUsers(getSidebarOptions(), usersList);
-
-    if (window.screen.width <= 992) {
-        toggleMenu();
-    }
+    renderUsers(usersList);
 });
 
 const getSidebarOptions = () => {
@@ -157,40 +152,26 @@ const getSidebarOptions = () => {
     return filtersObject;
 }
 
-const filterUsers = (filtersObject, usersArray) => {
+const filterUsers = (usersArray) => {
     const pipes = [filterByName, filterByGender, sortBy];
-    const filterName = filtersObject.name;
-    const filterGender = filtersObject.gender;
-    const filterSort = filtersObject.filterSort;
 
-    let users = pipes.reduce((list, func) => {
-        switch (func.name) {
-            case 'filterByName':
-                return func(list, filterName);
-            case 'filterByGender':
-                return func(list, filterGender);
-            case 'sortBy':
-                return func(list, filterSort);
-            default:
-                return usersArray;
-        }
-    }, usersArray);
+    let users = pipes.reduce(
+        (list, func) => func(list),
+        usersArray);
 
     usersFilteredList = users;
 
     return users;
 }
 
-const filterByName = (array, searchValue) => {
-    if (searchValue) {
-        searchValue = searchValue.trim().toLowerCase();
-        return array.filter(user => user.name.first.toLowerCase().includes(searchValue));
-    } else {
-        return array;
-    }
+const filterByName = (array) => {
+    let searchValue = getSidebarOptions().name;
+    searchValue = searchValue.trim().toLowerCase();
+    return array.filter(user => user.name.first.toLowerCase().includes(searchValue));
 }
 
-const filterByGender = (array, filterOption) => {
+const filterByGender = (array) => {
+    let filterOption = getSidebarOptions().gender;
     if (filterOption !== 'genderAll') {
         return array.filter(user => user.gender === filterOption);
     } else {
@@ -198,7 +179,8 @@ const filterByGender = (array, filterOption) => {
     }
 }
 
-const sortBy = (array, sortValue) => {
+const sortBy = (array) => {
+    let sortValue = getSidebarOptions().filterSort;
     if (sortValue.startsWith('alphabet')) {
         return array.sort((a, b) => {
             const nameA = a.name.first.toUpperCase();
@@ -241,7 +223,7 @@ const sortBy = (array, sortValue) => {
 
 //close user
 const closeUser = () => {
-    let singleUser = document.querySelector('.user_single');
+    let singleUser = document.querySelector('.user--single');
     
     if (singleUser) {
         singleUser.parentNode.removeChild(singleUser);
@@ -255,7 +237,7 @@ mainContainer.addEventListener('click', (e) => {
     e.preventDefault();
 
     if(e.target.closest('.user-button')) {
-        if (!e.target.closest('.user-button').classList.contains('user-button_close')) {
+        if (!e.target.closest('.user-button').classList.contains('user-button--close')) {
             let id = e.target.closest('.user-button').dataset.id;
             window.location.hash = id;
         } else {
@@ -273,7 +255,7 @@ window.addEventListener('hashchange', () => {
         });
         renderUser(singleUser[0]);
     } else {
-        renderUsers(getSidebarOptions(), usersFilteredList);
+        renderUsers(usersFilteredList);
     }
 }, false);
 
@@ -288,16 +270,13 @@ theme.addEventListener('click', (e) => {
 
 //toggle menu
 const menuToggle = document .querySelector('.header__toggle-menu');
+// const sidebar = document .querySelector('.main__sidebar');
 
 menuToggle.addEventListener('click', (e) => {
     e.preventDefault();
-    toggleMenu();
-});
-
-const toggleMenu = () => {
     menuToggle.classList.toggle('header__toggle-menu_open');
-    sidebarFilters.classList.toggle('main__sidebar_open');
-}
+    sidebarFilters.classList.toggle('main__sidebar--open');
+});
 
 //init
 getUsers();
