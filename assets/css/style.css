@@ -333,25 +333,25 @@ body {
 }
 
 @media (min-width: 992px) {
-    .user--single {
+    .user_single {
         text-align: left;
     }
     
-    .user--single .user-block {
+    .user_single .user-block {
         padding: 15px;
         height: auto;
     }
     
-    .user--single .user-poster {
+    .user_single .user-poster {
         float: left;
     }
     
-    .user--single .user-headings {
+    .user_single .user-headings {
         padding-left: 120px;
         text-align: left;
     }
     
-    .user--single .user-description {
+    .user_single .user-description {
         text-align: left;
         clear: left;
     }
@@ -381,6 +381,19 @@ body {
     display: block;
 }
 
+.filter__block {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.filter__block:last-child {
+    margin-bottom: 0;
+}
+
+.filter__block label {
+    margin-bottom: 0;
+}
+
 .filter__block input[type="text"] {
     display: block;
     margin-left: auto;
@@ -390,7 +403,8 @@ body {
     text-align: center;
 }
 
-.filter__block button {
+.filter__block input[type="submit"],
+.filter__block input[type="reset"] {
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -403,16 +417,20 @@ body {
     transition: 0.3s;
 }
 
-.filter__block button:hover,
-.filter__block button:focus,
-.filter__block button:active {
+.filter__block input[type="submit"]:hover,
+.filter__block input[type="submit"]:focus,
+.filter__block input[type="submit"]:active,
+.filter__block input[type="reset"]:hover,
+.filter__block input[type="reset"]:focus,
+.filter__block input[type="reset"]:active {
     background-color: var(--black);
     border-color: var(--white);
     color: var(--white);
 }
 
 @media (max-width: 991px) {
-    .filter__block button {
+    .filter__block input[type="submit"],
+    .filter__block input[type="reset"] {
         margin-top: 20px;
     }
 }
