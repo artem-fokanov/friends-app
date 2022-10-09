@@ -140,6 +140,10 @@ sidebarFilters.addEventListener("submit", function(event) {
     event.preventDefault();
 
     renderUsers(getSidebarOptions(), usersList);
+
+    if (window.screen.width <= 992) {
+        toggleMenu();
+    }
 });
 
 const getSidebarOptions = () => {
@@ -283,13 +287,16 @@ theme.addEventListener('click', (e) => {
 
 //toggle menu
 const menuToggle = document .querySelector('.header__toggle-menu');
-// const sidebar = document .querySelector('.main__sidebar');
 
 menuToggle.addEventListener('click', (e) => {
     e.preventDefault();
+    toggleMenu();
+});
+
+const toggleMenu = () => {
     menuToggle.classList.toggle('header__toggle-menu_open');
     sidebarFilters.classList.toggle('main__sidebar--open');
-});
+}
 
 //init
 getUsers();
