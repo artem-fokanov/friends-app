@@ -36,6 +36,7 @@ const renderUsers = (filtersObject, usersArray) => {
     let users = filterUsers(filtersObject, usersArray);
     users = users.map((user) => createUser(user)).join("");
     usersListContainer.innerHTML = users;
+    mainContainer.innerHTML = '';
     mainContainer.appendChild(usersListContainer);
 }
 
@@ -126,7 +127,7 @@ const renderUser = (user) => {
                     <p class="uppercase">${gender}</p>
                 </div>
 
-                <div class="user-button user-button--close">
+                <div class="user-button user-button_close">
                     Back to Friends
                 </div>
             </div>
@@ -240,7 +241,7 @@ const sortBy = (array, sortValue) => {
 
 //close user
 const closeUser = () => {
-    let singleUser = document.querySelector('.user--single');
+    let singleUser = document.querySelector('.user_single');
     
     if (singleUser) {
         singleUser.parentNode.removeChild(singleUser);
@@ -254,7 +255,7 @@ mainContainer.addEventListener('click', (e) => {
     e.preventDefault();
 
     if(e.target.closest('.user-button')) {
-        if (!e.target.closest('.user-button').classList.contains('user-button--close')) {
+        if (!e.target.closest('.user-button').classList.contains('user-button_close')) {
             let id = e.target.closest('.user-button').dataset.id;
             window.location.hash = id;
         } else {
@@ -295,7 +296,7 @@ menuToggle.addEventListener('click', (e) => {
 
 const toggleMenu = () => {
     menuToggle.classList.toggle('header__toggle-menu_open');
-    sidebarFilters.classList.toggle('main__sidebar--open');
+    sidebarFilters.classList.toggle('main__sidebar_open');
 }
 
 //init

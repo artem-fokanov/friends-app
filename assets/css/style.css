@@ -206,7 +206,7 @@ body {
         z-index: 1;
     }
 
-    .main__sidebar--open {
+    .main__sidebar_open {
         left: 0;
     }
 
